@@ -1,10 +1,9 @@
 import nltk
-from nltk.probability import LidstoneProbDist, WittenBellProbDist
-from nltk.model import NgramModel
 import os
 import numpy
 import random
 import pickle
+from collections import defaultdict
 
 # Returns a list containing all tokens from the data set (any text file in /data/)
 def tokenize_data():
@@ -39,13 +38,10 @@ def build_ngrams(tokens, n):
 # Returns a dictionary with <token> -> <counts> pairs for the specified ngram
 def get_ngram_counts(ngrams):
 
-	count_dict = {}
+	count_dict = defaultdict(int)
 
 	for gram in ngrams:
-		if gram in count_dict.keys():
-			count_dict[gram] += 1
-		else:
-			count_dict[gram] = 1
+		count_dict[gram] += 1
 
 	return count_dict
 
@@ -114,11 +110,36 @@ def sample(ngram_counts):
 	resultIndex = sampleList.argmax()
 	result = unigram_probs.keys()[resultIndex]
 
-	return result
+	return result[0]
+
+def combine_counts_for_string(text_so_far, unigrams, weights=[1,1,1,1,1], *ngrams):
+	
+	allCountDict = unigrams # Probabilities we give to the multinomial after sampling dirichlets for all ngrams
+
+	for ngram in ngrams:
+		n = len(ngram.keys()[0])
+		# Fancy shmancy dictionary so we don't have to check existence first
+		count_dict = defaultdict(int)
+		for key in ngram.keys():
+			gramCounts = ngram[key]
+			prevChars = text_so_far[-1:-n:-1] # Gets previous n-1 chars from the text_so_far
+			
+			# If the previous chars are the same, incremement the counts
+			if key[:n-1] == prevChars:
+				count_dict[key[-1]] += 1 * weights[n-1]
+
+		for key in count_dict.keys():
+			allCountDict[key] += count_dict[key]
+
+	return allCountDict
+
+def get_terminate_prob(text_so_far, *ngrams):
+	return 0.4
 
 def main():
 	# create_and_save_ngram_counts()
   	
+	weights = [1,2,3,4,5]
 
  	# Load
 	with open('ngrams/unigram_counts.pickle', 'rb') as handle:
@@ -129,18 +150,24 @@ def main():
   		trigram_counts = pickle.load(handle)
   	with open('ngrams/fourgram_counts.pickle', 'rb') as handle:
   		fourgram_counts = pickle.load(handle)	
-	
+  	with open('ngrams/fivegram_counts.pickle', 'rb') as handle:
+  		fivegram_counts = pickle.load(handle)	
+
+  	candidate_name = "^"
+
+  	for i in xrange(10):
+  		# Combine counts for all n-grams and sample a letter
+	  	allCountDict = combine_counts_for_string(candidate_name, unigram_counts, weights, bigram_counts, trigram_counts, fourgram_counts, fivegram_counts)
+	  	candidate_name += sample(allCountDict)
+  		
+  		# Decide when to end the word, allow minimum of 3 letters and maximum of 10 letters, for now
+  		if i > 3:
+	  		termProb = get_terminate_prob(candidate_name, unigram_counts, bigram_counts, trigram_counts, fourgram_counts, fivegram_counts)
+			if termProb > random.random():
+				break
 
 
-  	result = sample(bigram_counts)
-	print "result:", result
-
-  	result = sample(fourgram_counts)
-
-	print "result:", result
-	quit()
-
-
+	print candidate_name.replace("^","").replace("$","")
 
 if __name__ == "__main__":
 	main()
