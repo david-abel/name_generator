@@ -107,34 +107,38 @@ def create_and_save_ngram_counts():
 	with open('ngrams/fivegram_counts.pickle', 'wb') as handle:
   		pickle.dump(fivegram_counts, handle)
 
+def sample(ngram_counts):
+  	unigram_probs = counts_to_probs(ngram_counts)
+  	sampleMult = numpy.random.dirichlet(ngram_counts.values(),1)
+  	sampleList = numpy.random.multinomial(1, sampleMult[0])
+	resultIndex = sampleList.argmax()
+	result = unigram_probs.keys()[resultIndex]
+
+	return result
 
 def main():
-	create_and_save_ngram_counts()
-  	quit()
+	# create_and_save_ngram_counts()
+  	
 
  	# Load
-	with open('unigram_probs.pickle', 'rb') as handle:
-  		unigram_probs = pickle.load(handle)
+	with open('ngrams/unigram_counts.pickle', 'rb') as handle:
+  		unigram_counts = pickle.load(handle)
+  	with open('ngrams/bigram_counts.pickle', 'rb') as handle:
+  		bigram_counts = pickle.load(handle)	
+	with open('ngrams/trigram_counts.pickle', 'rb') as handle:
+  		trigram_counts = pickle.load(handle)
+  	with open('ngrams/fourgram_counts.pickle', 'rb') as handle:
+  		fourgram_counts = pickle.load(handle)	
+	
 
-	print unigram_probs
+
+  	result = sample(bigram_counts)
+	print "result:", result
+
+  	result = sample(fourgram_counts)
+
+	print "result:", result
 	quit()
-
-	rand_double = random.random()
-	kill_threshold = 1.0
-
-	length_bias = 0.05
-
-	result = "^"
-
-	while rand_double < kill_threshold:
-		result = add_char(result)
-		# Then get another random value, add a bias term so the longer result is, the more likely we are to terminate.
-		rand_double = random.random() + (length_bias * len(result))
-
-	result = result[0].upper() + result[1:]
-
-	print result
-
 
 
 

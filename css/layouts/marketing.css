@@ -66,7 +66,7 @@ label {
  * I want my pure-button elements to look a little different
  */
 .pure-button {
-    background-color: #C4D8DB; /* old: #1f8dd6 */
+    background-color: #B2956C; /* old: #1f8dd6 */
     color: white;
     padding: 0.5em 2em;
     border-radius: 5px;
@@ -78,7 +78,6 @@ a.pure-button-primary {
     border-radius: 5px;
     font-size: 120%;
 }
-
 
 
 
@@ -129,7 +128,7 @@ a.pure-button-primary {
  */
 
 .splash-container {
-    background: #F0DDC0;
+    background: #CDECFF;
     /* Original: #1f8dd6;*/
     /* The following styles are required for the "scroll-over" effect */
     width: 100%;
@@ -141,7 +140,7 @@ a.pure-button-primary {
 
 .splash {
     /* absolute center .splash within .splash-container */
-    width: 70%;
+    width: 50%;
     height: 70%;
     margin: auto;
     position: absolute;
@@ -151,19 +150,21 @@ a.pure-button-primary {
 
 /* This is the main heading that appears on the blue section */
 .splash-head {
-    font-size: 18px;
-    color: white;
-    border: 1px solid white;
+    width: 45%;
+    color: #7E9EB2;
+    font-size: 28px;
+    border: 2px solid #E7F6FF;
     padding: 1em 1.6em;
     font-weight: 100;
     border-radius: 9px;
     line-height: 0.5em;
+    margin: auto;
 }
 
 /* This is the subheading that appears on the blue section */
 .splash-subhead {
-    font-size: 32px;
-    color: white;
+    font-size: 44px;
+    color: #7E9EB2;
     letter-spacing: 0.05em;
     opacity: 0.8;
 }
@@ -252,9 +253,9 @@ a.pure-button-primary {
         height: 50%;
     }
 
-    .splash-head {
-        font-size: 250%;
-    }
+/*    .splash-head {
+        font-size: 150%;
+    }*/
 
 
     /* We remove the border-separator assigned to .l-box-lrg */
@@ -271,7 +272,7 @@ a.pure-button-primary {
  */
 @media (min-width: 78em) {
     /* We increase the header font size even more */
-    .splash-head {
+/*    .splash-head {
         font-size: 300%;
-    }
+    }*/
 }
