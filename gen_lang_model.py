@@ -106,11 +106,11 @@ def create_and_save_ngram_counts():
   		pickle.dump(fivegram_counts, handle)
 
 def sample(ngram_counts):
-  	unigram_probs = counts_to_probs(ngram_counts)
+
   	sampleMult = numpy.random.dirichlet(ngram_counts.values(),1)
   	sampleList = numpy.random.multinomial(1, sampleMult[0])
 	resultIndex = sampleList.argmax()
-	result = unigram_probs.keys()[resultIndex]
+	result = ngram_counts.keys()[resultIndex]
 
 	return result[0]
 
@@ -134,26 +134,29 @@ def combine_counts_for_string(text_so_far, unigrams, weights=[1,1,1,1,1], *ngram
 
 	return all_count_dict
 
-def get_terminate_prob(text_so_far, weight=1, *ngrams):
-	return 0.3
+def get_terminate_prob(all_count_dict, weight=1):
 
-	for ngram in ngrams:
-		n = len(ngram.keys()[0])
-		prevChars = text_so_far[-1:-n - 1:-1] # Gets previous n-1 chars from the text_so_far
-		for key in ngram.keys():
-			prevChars = text_so_far[-1:-n:-1] # Gets previous n-1 chars from the text_so_far
-			
-			# If the previous chars are the same, and there are enough chars for the ngram, incremement the counts
-			if len(key[:n-1]) == n-1 and key[:n-1] == prevChars:
-				count_dict[key[-1]] += 1 * weights[n-1]
+	if "$" in all_count_dict.keys():
+		end_char_index = all_count_dict.keys().index("$")
+		sample_mults = numpy.random.dirichlet(all_count_dict,10)
 
+		total = 0
+		for multinomial in sample_mults:
+			total += multinomial[end_char_index]
+
+		terminate_prob = total / len(multinomial)
+		print "terminate_prob: ", terminate_prob
+		return terminate_prob
+	else:
+		return 0.35
 
 
 def main():
 	# create_and_save_ngram_counts()
 	# quit()
-	
-	weights = [1,2,3,4,5]
+
+	# Places emphasis on N
+	weights = [1,3,5,7,100]
 
  	# Load
 	with open('ngrams/unigram_counts.pickle', 'rb') as handle:
@@ -167,24 +170,24 @@ def main():
   	with open('ngrams/fivegram_counts.pickle', 'rb') as handle:
   		fivegram_counts = pickle.load(handle)	
 
-  	print bigram_counts
-  	quit()
-
+  	# Generate name
   	candidate_name = "^"
 
-  	for i in xrange(10):
+  	for i in xrange(7):
   		# Combine counts for all n-grams and sample a letter
 	  	all_count_dict = combine_counts_for_string(candidate_name, unigram_counts, weights, bigram_counts, trigram_counts, fourgram_counts, fivegram_counts)
 	  	candidate_name += sample(all_count_dict)
-  		
-  		# Decide when to end the word, allow minimum of 3 letters and maximum of 10 letters, for now
+  		# Decide when to end the word, allow minimum of 3 letters and maximum of 6 letters, for now
   		if i > 3:
-	  		terminate_prob = get_terminate_prob(candidate_name, unigram_counts, bigram_counts, trigram_counts, fourgram_counts, fivegram_counts)
+	  		terminate_prob = get_terminate_prob(all_count_dict)
 			if terminate_prob > random.random():
 				break
 
+	# Formatting
+	candidate_name = candidate_name.replace("^","").replace("$","")
+	final_result = 	candidate_name[0].upper() + candidate_name[1:]
 
-	print candidate_name.replace("^","").replace("$","")
+	print final_result
 
 if __name__ == "__main__":
 	main()
