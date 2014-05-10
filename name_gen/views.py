@@ -27,7 +27,7 @@ def home(request):
 
     candidate_name = name_generator.generate_name(weights, unigram_counts, bigram_counts, trigram_counts, fourgram_counts, fivegram_counts)
 
-    template = loader.get_template('index.html')
+    template = loader.get_template('name_gen.html')
     context = RequestContext(request, {
         'candidate_name': candidate_name,
     })

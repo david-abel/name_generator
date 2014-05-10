@@ -1,5 +1,5 @@
 """
-Django settings for personal_website project.
+Django settings for name_gen_backend project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.6/topics/settings/
@@ -31,7 +31,7 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    '/Users/dabel/Projects/personal_website/name_gen/static',
+    '/Users/dabel/Projects/name_gen_backend/name_gen/static',
 )
 
 # Application definition
@@ -55,9 +55,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'personal_website.urls'
+ROOT_URLCONF = 'name_gen_backend.urls'
 
-WSGI_APPLICATION = 'personal_website.wsgi.application'
+WSGI_APPLICATION = 'name_gen_backend.wsgi.application'
 
 
 # Database

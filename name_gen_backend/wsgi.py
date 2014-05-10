@@ -1,5 +1,5 @@
 """
-WSGI config for personal_website project.
+WSGI config for name_gen_backend project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -8,7 +8,7 @@ https://docs.djangoproject.com/en/1.6/howto/deployment/wsgi/
 """
 
 import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "personal_website.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "name_gen_backend.settings")
 
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
