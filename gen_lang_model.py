@@ -31,8 +31,10 @@ def build_ngrams(tokens, n):
 	if n > 1:
 		# Add the "start" and "end" character ngrams
 		for token in tokens:
-			ngrams.append(("^",token[:n])) # START
-			ngrams.append((token[-1:-n:-1],"$")) # END
+			# Only add count if there are enough chars
+			if len(token[:n]) == n:
+				ngrams.append(("^",token[0])) # START
+				ngrams.append((token[-1],"$")) # END
 	return ngrams
 
 # Returns a dictionary with <token> -> <counts> pairs for the specified ngram
@@ -114,31 +116,43 @@ def sample(ngram_counts):
 
 def combine_counts_for_string(text_so_far, unigrams, weights=[1,1,1,1,1], *ngrams):
 	
-	allCountDict = unigrams # Probabilities we give to the multinomial after sampling dirichlets for all ngrams
+	all_count_dict = unigrams # Probabilities we give to the multinomial after sampling dirichlets for all ngrams
 
 	for ngram in ngrams:
 		n = len(ngram.keys()[0])
 		# Fancy shmancy dictionary so we don't have to check existence first
 		count_dict = defaultdict(int)
-		for key in ngram.keys():
-			gramCounts = ngram[key]
-			prevChars = text_so_far[-1:-n:-1] # Gets previous n-1 chars from the text_so_far
+		prevChars = text_so_far[-1:-n:-1] # Gets previous n-1 chars from the text_so_far
 			
-			# If the previous chars are the same, incremement the counts
-			if key[:n-1] == prevChars:
+		for key in ngram.keys():
+			# If the previous chars are the same, and there are enough chars for the ngram, incremement the counts
+			if len(key[:n-1]) == n-1 and key[:n-1] == prevChars:
 				count_dict[key[-1]] += 1 * weights[n-1]
 
 		for key in count_dict.keys():
-			allCountDict[key] += count_dict[key]
+			all_count_dict[key] += count_dict[key]
 
-	return allCountDict
+	return all_count_dict
 
-def get_terminate_prob(text_so_far, *ngrams):
-	return 0.4
+def get_terminate_prob(text_so_far, weight=1, *ngrams):
+	return 0.3
+
+	for ngram in ngrams:
+		n = len(ngram.keys()[0])
+		prevChars = text_so_far[-1:-n - 1:-1] # Gets previous n-1 chars from the text_so_far
+		for key in ngram.keys():
+			prevChars = text_so_far[-1:-n:-1] # Gets previous n-1 chars from the text_so_far
+			
+			# If the previous chars are the same, and there are enough chars for the ngram, incremement the counts
+			if len(key[:n-1]) == n-1 and key[:n-1] == prevChars:
+				count_dict[key[-1]] += 1 * weights[n-1]
+
+
 
 def main():
 	# create_and_save_ngram_counts()
-  	
+	# quit()
+	
 	weights = [1,2,3,4,5]
 
  	# Load
@@ -153,17 +167,20 @@ def main():
   	with open('ngrams/fivegram_counts.pickle', 'rb') as handle:
   		fivegram_counts = pickle.load(handle)	
 
+  	print bigram_counts
+  	quit()
+
   	candidate_name = "^"
 
   	for i in xrange(10):
   		# Combine counts for all n-grams and sample a letter
-	  	allCountDict = combine_counts_for_string(candidate_name, unigram_counts, weights, bigram_counts, trigram_counts, fourgram_counts, fivegram_counts)
-	  	candidate_name += sample(allCountDict)
+	  	all_count_dict = combine_counts_for_string(candidate_name, unigram_counts, weights, bigram_counts, trigram_counts, fourgram_counts, fivegram_counts)
+	  	candidate_name += sample(all_count_dict)
   		
   		# Decide when to end the word, allow minimum of 3 letters and maximum of 10 letters, for now
   		if i > 3:
-	  		termProb = get_terminate_prob(candidate_name, unigram_counts, bigram_counts, trigram_counts, fourgram_counts, fivegram_counts)
-			if termProb > random.random():
+	  		terminate_prob = get_terminate_prob(candidate_name, unigram_counts, bigram_counts, trigram_counts, fourgram_counts, fivegram_counts)
+			if terminate_prob > random.random():
 				break
 
 
