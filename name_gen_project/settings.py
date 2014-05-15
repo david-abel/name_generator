@@ -31,7 +31,7 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    '/Users/dabel/Projects/name_gen_backend/name_gen/static',
+    '/Users/dabel/Projects/name_generator/name_gen_frontend/static',
 )
 
 # Application definition
@@ -43,7 +43,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'name_gen',
+    'name_gen_app',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -55,9 +55,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'name_gen_backend.urls'
+ROOT_URLCONF = 'name_gen_project.urls'
 
-WSGI_APPLICATION = 'name_gen_backend.wsgi.application'
+WSGI_APPLICATION = 'name_gen_project.wsgi.application'
 
 
 # Database
